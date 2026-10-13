@@ -12,7 +12,6 @@ import android.webkit.WebViewClient
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -39,7 +38,7 @@ class MainActivity : ComponentActivity() {
   val scroll=ScrollView(this);content=LinearLayout(this).apply{orientation=1;setPadding(16,14,16,24)};scroll.addView(content);root.addView(scroll,LinearLayout.LayoutParams(-1,0,1f));setContentView(root)
  }
  private fun label(s:String,size:Float=16f){content.addView(TextView(this).apply{text=s;textSize=size;setTextColor(0xFF1C2D45.toInt());setPadding(2,10,2,8)})}
- private fun button(s:String,action:()->Unit){val b=Button(this).apply{text=s;isAllCaps=false;textSize=15f;setTextColor(-1);backgroundTintList=ContextCompat.getColorStateList(this@MainActivity,0xFF2459A6)};content.addView(b,LinearLayout.LayoutParams(-1,-2).apply{bottomMargin=7});b.setOnClickListener{action()}}
+ private fun button(s:String,action:()->Unit){val b=Button(this).apply{text=s;isAllCaps=false;textSize=15f;setTextColor(-1);backgroundTintList=android.content.res.ColorStateList.valueOf(0xFF2459A6.toInt())};content.addView(b,LinearLayout.LayoutParams(-1,-2).apply{bottomMargin=7});b.setOnClickListener{action()}}
  private fun field(hint:String,multi:Boolean=false):EditText{val e=EditText(this).apply{this.hint=hint;textSize=16f;setPadding(12,10,12,10);setBackgroundColor(-1)};if(multi){e.minLines=3;e.gravity=Gravity.TOP;e.inputType=android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE};content.addView(e,LinearLayout.LayoutParams(-1,-2).apply{bottomMargin=8});return e}
  private fun showHome(){setup("HOME");label("Your personal JEE practice space",22f);label("Create your own tests. Import PDFs and photos, review detected questions, and practise.");button("Create / select questions"){showBank()};button("Import question-paper PDF"){pdfPicker.launch("application/pdf")};button("Scan question with camera"){camera.launch(null)};button("Choose question photo"){imagePicker.launch("image/*")};button("Start test from selected questions"){startTest()};button("Ask ChatGPT inside this app"){showChat()};button("How it works"){AlertDialog.Builder(this).setTitle("JEE Prep").setMessage("Review OCR carefully: maths symbols and scanned text can be misread. Select questions and set answer keys for automatic scoring.").setPositiveButton("OK",null).show()}}
  private fun showBank(){
