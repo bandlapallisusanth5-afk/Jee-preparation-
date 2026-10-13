@@ -21,14 +21,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Extract Android project
-        run: |
-          unzip -q JEEPreparationAndroid-phone-build.zip -d android-source
-          cp -R android-source/. .
-
-      - name: Set Java compatibility to 17
+      - name: Extract Android project and apply improved app
         shell: bash
         run: |
+          cp app/src/main/java/com/example/jeepreparation/MainActivity.kt /tmp/ImprovedMainActivity.kt
+          unzip -q JEEPreparationAndroid-phone-build.zip -d android-source
+          cp -R android-source/. .
+          cp /tmp/ImprovedMainActivity.kt app/src/main/java/com/example/jeepreparation/MainActivity.kt
           python3 - <<'PY'
           from pathlib import Path
           p = Path("app/build.gradle.kts")
@@ -40,7 +39,15 @@ jobs:
           """
           if "sourceCompatibility = JavaVersion.VERSION_17" not in s:
               s = s.replace("android {", "android {\n" + block, 1)
+          if 'com.google.mlkit:text-recognition' not in s:
+              s = s.replace("dependencies {", 'dependencies {\n    implementation("com.google.mlkit:text-recognition:16.0.1")', 1)
           p.write_text(s)
+          manifest = Path("app/src/main/AndroidManifest.xml")
+          m = manifest.read_text()
+          if "android.permission.INTERNET" not in m:
+              m = m.replace("<manifest", '<manifest\n    xmlns:tools="http://schemas.android.com/tools"', 1)
+              m = m.replace("<application", '<uses-permission android:name="android.permission.INTERNET" />\n    <application', 1)
+          manifest.write_text(m)
           PY
 
       - name: Set up Gradle
